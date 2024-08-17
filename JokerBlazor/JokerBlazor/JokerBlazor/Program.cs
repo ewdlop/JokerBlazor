@@ -1,7 +1,18 @@
 using JokerBlazor.Client.Pages;
 using JokerBlazor.Components;
+using JokerBlazor.Settings;
+using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+var serilogSettings = new SerilogSettings();
+serilogSettings.ConfigureSerilog();
+
+// Add Serilog to the logging pipeline
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -33,3 +44,6 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(JokerBlazor.Client._Imports).Assembly);
 
 app.Run();
+
+// Ensure to flush and stop Serilog
+Log.CloseAndFlush();

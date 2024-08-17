@@ -1,9 +1,6 @@
-using JokerBlazor.Client.Pages;
 using JokerBlazor.Components;
 using JokerBlazor.Settings;
 using Serilog;
-using Serilog.Events;
-using Serilog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 

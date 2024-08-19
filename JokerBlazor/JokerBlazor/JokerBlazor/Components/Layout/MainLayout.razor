@@ -33,12 +33,12 @@
 
     // Light/Dark Mode Toggle
     private string _label = string.Empty;
-    private bool _isDarkMode = true;
+    private bool _isDarkMode = false;
     private MudThemeProvider? _mudThemeProvider;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _label = _isDarkMode ? "Dark Mode" : "Light Mode";
+        _label = _isDarkMode ? "Light Mode" : "Dark Mode";
         if (firstRender)
         {
             if (_mudThemeProvider != null)

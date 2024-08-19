@@ -1,5 +1,6 @@
 using JokerBlazor.Components;
 using JokerBlazor.Settings;
+using MudBlazor.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ builder.Host.UseSerilog();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+// Add MudBlazor services
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

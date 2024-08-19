@@ -5,8 +5,8 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Platforms>AnyCPU;</Platforms>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<FileVersion>1.0.0.0</FileVersion>
+		<AssemblyVersion>1.0.0.2</AssemblyVersion>
+		<FileVersion>1.0.0.2</FileVersion>
 		<Copyright>Copyright ©️ David Aydin 2024</Copyright>
 		<Description>Blazor Web App Server-Side for Computer Programming Jokes</Description>
 	</PropertyGroup>

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JokerBlazor", "JokerBlazor\JokerBlazor\JokerBlazor.csproj", "{DA4CB007-1E64-4571-964B-092ADC11C6F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JokerBlazor", "JokerBlazor\JokerBlazor\JokerBlazor.csproj", "{DA4CB007-1E64-4571-964B-092ADC11C6F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JokerBlazor.Client", "JokerBlazor\JokerBlazor.Client\JokerBlazor.Client.csproj", "{A4C22292-D539-4A03-BFD0-E6AC6ECA142E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JokerBlazor.Client", "JokerBlazor\JokerBlazor.Client\JokerBlazor.Client.csproj", "{A4C22292-D539-4A03-BFD0-E6AC6ECA142E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3501E4EA-C655-4D4C-909A-4D82F72503FF}"
 	ProjectSection(SolutionItems) = preProject

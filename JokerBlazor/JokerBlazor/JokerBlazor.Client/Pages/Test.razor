@@ -1,0 +1,21 @@
+﻿@page "/test"
+@using MudBlazor
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary">Click Me</MudButton>
+
+<MudTable Items="months">
+    <HeaderContent>
+        <MudTh>Month</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Month">@context</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private List<string> months = new List<string>
+    {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+}

@@ -3,14 +3,14 @@
     <MudNavLink Href="/" Match="NavLinkMatch.All">
         <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
     </MudNavLink>
-    <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">
+    <MudNavLink Href="/counter" Match="NavLinkMatch.All">
         <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
     </MudNavLink>
     <MudNavGroup Title="Settings" Expanded="@_expanded">
-        <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">
+        <MudNavLink Href="/weather" Match="NavLinkMatch.All">
             <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
         </MudNavLink>
-        <MudNavLink Href="/test" Match="NavLinkMatch.Prefix">
+        <MudNavLink Href="/test" Match="NavLinkMatch.All">
             <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Test
         </MudNavLink>
     </MudNavGroup>

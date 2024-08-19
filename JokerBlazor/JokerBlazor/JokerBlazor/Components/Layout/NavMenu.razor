@@ -1,5 +1,4 @@
-﻿
-<MudNavMenu>
+﻿<MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All">
         <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
     </MudNavLink>
@@ -18,7 +17,7 @@
 </MudNavMenu>
 
 @code {
-    public bool _expanded = true;
+    private bool _expanded = false;
 
-    public void SubMenuToggle() => _expanded = !_expanded;
+    private void SubMenuToggle() => _expanded = !_expanded;
 }

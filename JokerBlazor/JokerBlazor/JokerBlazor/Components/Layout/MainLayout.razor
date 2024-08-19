@@ -7,9 +7,9 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudSpacer />
-        <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />
+        <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="@_label" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
@@ -32,15 +32,20 @@
     private void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
     // Light/Dark Mode Toggle
-    private bool _isDarkMode;
-    private MudThemeProvider _mudThemeProvider;
+    private string _label = string.Empty;
+    private bool _isDarkMode = true;
+    private MudThemeProvider? _mudThemeProvider;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _label = _isDarkMode ? "Dark Mode" : "Light Mode";
         if (firstRender)
         {
-            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-            StateHasChanged();
+            if (_mudThemeProvider != null)
+            {
+                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+                StateHasChanged();
+            }
         }
     }
 }

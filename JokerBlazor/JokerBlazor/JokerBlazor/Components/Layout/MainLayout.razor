@@ -38,14 +38,27 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _label = _isDarkMode ? "Light Mode" : "Dark Mode";
-        if (firstRender)
+        _label = _isDarkMode ? "Dark Mode" : "Light Mode";
+        await base.OnAfterRenderAsync(firstRender);
+        StateHasChanged();
+
+        // if (firstRender)
+        // {
+        //     if (_mudThemeProvider != null)
+        //     {
+        //         _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+        //         StateHasChanged();
+        //     }
+        // }
+    }
+
+    private async Task ThemeChanged(bool isDark)
+    {
+        _isDarkMode = isDark;
+        if (_mudThemeProvider != null)
         {
-            if (_mudThemeProvider != null)
-            {
-                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-                StateHasChanged();
-            }
+            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            StateHasChanged();
         }
     }
 }

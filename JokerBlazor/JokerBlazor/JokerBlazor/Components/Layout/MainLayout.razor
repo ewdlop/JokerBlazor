@@ -9,7 +9,8 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudSpacer />
-        <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="@_label" />
+        <MudButton OnClick="() => OnThemeChanged(new ChangeEventArgs { Value = !_isDarkMode })">@_label</MudButton>
+        <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Theme" @onchange="OnThemeChanged" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
@@ -36,20 +37,24 @@
     private bool _isDarkMode = false;
     private MudThemeProvider? _mudThemeProvider;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
         _label = _isDarkMode ? "Dark Mode" : "Light Mode";
-        await base.OnAfterRenderAsync(firstRender);
-        StateHasChanged();
     }
 
-    private async Task OnThemeChanged(bool isDark)
+    private void OnThemeChanged(ChangeEventArgs e)
     {
-        _isDarkMode = isDark;
-        if (_mudThemeProvider != null)
+        try
         {
-            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            Serilog.Log.Information("OnThemeChanged called with value: @value", e.Value);
+            _isDarkMode = (bool)e.Value!;
+            _label = _isDarkMode ? "Dark Mode" : "Light Mode";
+            Serilog.Log.Information("Updated label: @label", _label);
             StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "An error occurred in OnThemeChanged");
         }
     }
 }

@@ -46,10 +46,10 @@
     {
         try
         {
-            Serilog.Log.Information("OnThemeChanged called with value: @value", e.Value);
+            Serilog.Log.Information("OnThemeChanged called with value: {value}", e.Value);
             _isDarkMode = (bool)e.Value!;
             _label = _isDarkMode ? "Dark Mode" : "Light Mode";
-            Serilog.Log.Information("Updated label: @label", _label);
+            Serilog.Log.Information("Updated label: {label}", _label);
             StateHasChanged();
         }
         catch (Exception ex)

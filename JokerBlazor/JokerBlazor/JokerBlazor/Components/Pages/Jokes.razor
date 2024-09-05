@@ -1,34 +1,121 @@
 ﻿@page "/jokes"
 
-<h3>Jokes</h3>
+<MudContainer>
+    <MudText Typo="Typo.h4" Align="Align.Center">Jokes</MudText>
 
-<button @onclick="GetJoke">Get Joke</button>
-<p>@jokeText</p>
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <MudText Typo="Typo.body1">API Url: </MudText>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <MudText Variant="Variant.Filled" Color="Color.Primary">@displayUrl</MudText>
+        </div>
+        
+        <br />
+        <MudText Typo="Typo.body1">Select Flags to Blacklist</MudText>
+        <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+            @foreach (var flag in blacklistFlags)
+            {
+                <MudCheckBox T="bool" Label="@flag" @bind-value="@selectedFlags[flag]" />
+            }
+        </div>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
+            Generate New Joke
+        </MudButton>
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
+        <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+            @if (isLoading)
+            {
+                <div class="loading-indicator">
+                    Loading...
+                </div>
+            }
+            @jokeText
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <MudText Typo="Typo.h6">Dave's side note:</MudText>
+        <MudText Typo="Typo.body1">Sometimes no joke is generated. If that happens click to generate a new joke until you see a new one appear.</MudText>
+    </MudPaper>
+</MudContainer>
+
 
 @code {
-    private string jokeText;
-    private const string RequestUri = "https://sv443.net/jokeapi/v2/joke/Any";
+    private bool isLoading;
+    private string BaseRequestUrl = "https://sv443.net/jokeapi/v2/joke/Any";
+    private string displayUrl = string.Empty;
 
-    // TODO: Update API Call to use Blacklist Flags 
+    private string? jokeText;
+
+    private string[] blacklistFlags = { "nsfw", "religious", "political", "racist", "sexist", "explicit" };
+    private Dictionary<string, bool> selectedFlags = new Dictionary<string, bool>();
+
+    protected override void OnInitialized()
+    {
+        foreach (var flag in blacklistFlags)
+        {
+            selectedFlags[flag] = false;
+        }
+
+        displayUrl = BaseRequestUrl;
+    }
 
     private async Task GetJoke()
     {
-        HttpClient client = new HttpClient();
-        HttpResponseMessage response = await client.GetAsync(RequestUri);
+        isLoading = true;
+        string requestUrl = BuildRequestUrl();
+        displayUrl = requestUrl;
+        Log.Information("BuildRequestUrl() {requestUrl}", requestUrl);
+
+        using HttpClient client = new HttpClient();
+        using HttpResponseMessage response = await client.GetAsync(requestUrl);
         if (response.IsSuccessStatusCode)
         {
-            Joke joke = await response.Content.ReadFromJsonAsync<Joke>();
-            jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
+            Joke? joke = await response.Content.ReadFromJsonAsync<Joke>();
+            if (joke != null)
+            {
+                jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
+            }
+            else
+            {
+                jokeText = "Failed to retrieve joke";
+            }
         }
         else
         {
             jokeText = "Failed to retrieve joke";
         }
+        isLoading = false;
+    }
+
+    private string BuildRequestUrl()
+    {
+        try
+        {
+            var selectedFlagsList = selectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
+            Log.Information("Selected Flags: {selectedFlags}", string.Join(", ", selectedFlagsList));
+
+            if (selectedFlagsList.Count > 0)
+            {
+                return $"{BaseRequestUrl}?blacklistFlags={string.Join(",", selectedFlagsList)}";
+            }
+
+            return BaseRequestUrl;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred in BuildRequestUri");
+            return string.Empty;
+        }
     }
 
     public class Joke
     {
-        public string Setup { get; set; }
-        public string Delivery { get; set; }
+        public string? Setup { get; set; }
+        public string? Delivery { get; set; }
     }
 }

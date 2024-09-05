@@ -1,19 +1,18 @@
 ﻿<MudNavMenu>
     <MudNavLink Href="/jokes" Match="NavLinkMatch.All">
-        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Jokes
+        <MudIcon Icon="@Icons.Material.Filled.SentimentVerySatisfied" /> Jokes
     </MudNavLink>
     <MudNavGroup Title="Default Blazor Pages" Expanded="@_expanded">
         <MudNavLink Href="/" Match="NavLinkMatch.All">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <MudIcon Icon="@Icons.Material.Filled.House" /> Home
         </MudNavLink>
         <MudNavLink Href="/counter" Match="NavLinkMatch.All">
-            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <MudIcon Icon="@Icons.Material.Filled.Add" /> Counter
         </MudNavLink>
         <MudNavLink Href="/weather" Match="NavLinkMatch.All">
-            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <MudIcon Icon="@Icons.Material.Filled.WbSunny" /> Weather
         </MudNavLink>
     </MudNavGroup>
-    <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
 </MudNavMenu>
 
 @code {

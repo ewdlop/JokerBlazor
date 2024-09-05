@@ -9,9 +9,21 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudSpacer />
-        <MudButton OnClick="() => OnThemeChanged(new ChangeEventArgs { Value = !_isDarkMode })">@_label</MudButton>
-        <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Theme" @onchange="OnThemeChanged" />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        @* <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Theme" @onchange="OnThemeChanged" /> *@
+        <MudMenu FullWidth="false" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Edge="Edge.End">
+            <ActivatorContent>
+                <MudChip T="string" Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit"></MudChip>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem OnClick="() => OnThemeChanged(new ChangeEventArgs { Value = !_isDarkMode })" style="text-align: center;">Toggle Theme</MudMenuItem>
+                <MudMenuItem>
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" />
+                        <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
+                    </div>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -46,15 +58,15 @@
     {
         try
         {
-            Serilog.Log.Information("OnThemeChanged called with value: {value}", e.Value);
+            Log.Information("OnThemeChanged called with [_isDarkMode] value: {value}", e.Value);
             _isDarkMode = (bool)e.Value!;
             _label = _isDarkMode ? "Dark Mode" : "Light Mode";
-            Serilog.Log.Information("Updated label: {label}", _label);
+            Log.Information("Updated label: {label}", _label);
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Serilog.Log.Error(ex, "An error occurred in OnThemeChanged");
+            Log.Error(ex, "An error occurred in OnThemeChanged");
         }
     }
 }

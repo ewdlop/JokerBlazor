@@ -17,7 +17,10 @@
             <ChildContent>
                 <MudMenuItem OnClick="() => OnThemeChanged(new ChangeEventArgs { Value = !_isDarkMode })" style="text-align: center;">Toggle Theme</MudMenuItem>
                 <MudMenuItem>
-                    <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" />
+                        <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
+                    </div>
                 </MudMenuItem>
             </ChildContent>
         </MudMenu>

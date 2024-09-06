@@ -9,19 +9,15 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudSpacer />
-        @* <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Theme" @onchange="OnThemeChanged" /> *@
         <MudMenu FullWidth="false" ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" Edge="Edge.End">
             <ActivatorContent>
-                <MudChip T="string" Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit"></MudChip>
+                <MudChip T="string" Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit">
+                    Options
+                </MudChip>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem OnClick="() => OnThemeChanged(new ChangeEventArgs { Value = !_isDarkMode })" style="text-align: center;">Toggle Theme</MudMenuItem>
-                <MudMenuItem>
-                    <div style="display: flex; flex-direction: row; align-items: center;">
-                        <MudIcon Icon="@Icons.Material.Filled.Info" />
-                        <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
-                    </div>
-                </MudMenuItem>
+                <MudSwitch ValueChanged="OnThemeChanged" Color="Color.Primary" Class="ma-4" T="bool" Label="Theme" />
+                <MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit">About</MudNavLink>
             </ChildContent>
         </MudMenu>
     </MudAppBar>
@@ -39,29 +35,20 @@
 </MudLayout>
 
 @code {
-
     // Side Panel Drawer Toggle
     private bool _drawerOpen = true;
     private void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
     // Light/Dark Mode Toggle
-    private string _label = string.Empty;
     private bool _isDarkMode = false;
     private MudThemeProvider? _mudThemeProvider;
 
-    protected override void OnInitialized()
-    {
-        _label = _isDarkMode ? "Dark Mode" : "Light Mode";
-    }
-
-    private void OnThemeChanged(ChangeEventArgs e)
+    private void OnThemeChanged(bool _p_isDarkMode)
     {
         try
         {
-            Log.Information("OnThemeChanged called with [_isDarkMode] value: {value}", e.Value);
-            _isDarkMode = (bool)e.Value!;
-            _label = _isDarkMode ? "Dark Mode" : "Light Mode";
-            Log.Information("Updated label: {label}", _label);
+            _isDarkMode = _p_isDarkMode;
+            Log.Information("OnThemeChanged: {label}", (_isDarkMode ? "Dark Mode" : "Light Mode"));
             StateHasChanged();
         }
         catch (Exception ex)

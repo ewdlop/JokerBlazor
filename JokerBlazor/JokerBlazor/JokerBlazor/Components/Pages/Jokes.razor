@@ -64,19 +64,22 @@
     private async Task GetJoke()
     {
         isLoading = true;
-
-        string requestUrl = BuildRequestUrl();
-        displayUrl = requestUrl;
-        Log.Information("DisplayUrl: {requestUrl}", requestUrl);
+        Log.Information("Requesting new Joke.");
 
         try
         {
+            string requestUrl = BuildRequestUrl();
+            Log.Information("RequestUrl: {requestUrl}", requestUrl);
+
+            Log.Information("Updating DisplayUrl.");
+            displayUrl = requestUrl;
             using HttpClient client = new HttpClient();
             using HttpResponseMessage response = await client.GetAsync(requestUrl);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 Log.Information("API Response: \r\n{content}", content);
+                Log.Information("Parsing JSON Document.");
                 var jsonDocument = JsonDocument.Parse(content);
                 var rootElement = jsonDocument.RootElement;
 
@@ -84,20 +87,17 @@
                 if (rootElement.TryGetProperty("error", out JsonElement errorElement) && errorElement.GetBoolean())
                 {
                     // JokeApiError JSON
+                    Log.Warning("JokeApiError JSON Object Detected!");
+                    Log.Information("Deserializing JokeApiError JSON response.");
                     var error = JsonSerializer.Deserialize<JokeApiError>(content);
                     if (error != null)
                     {
-                        // Update Joke Text
-                        jokeText = $"Error: {error.Message}";
-
                         // Log Error JSON Details
-                        Log.Information("Error Error: {error}", error.Error);
-                        Log.Information("Error InternalError: {internalError}", error.InternalError);
-                        Log.Information("Error Code: {code}", error.Code);
-                        Log.Information("Error Message: {message}", error.Message);
-                        Log.Information("Error CausedBy: {causedBy}", string.Join(", ", error.CausedBy!));
-                        Log.Information("Error AdditionalInfo: {additionalInfo}", error.AdditionalInfo);
-                        Log.Information("Error TimeStamp: {timeStamp}", error.TimeStamp);
+                        error.LogJokeApiErrorDetails();
+
+                        // Update Joke Text
+                        Log.Information("Updating Joke Text with Error Message.");
+                        jokeText = $"Error: {error.Message}";
                     }
                     else
                     {
@@ -107,23 +107,17 @@
                 else
                 {
                     // Joke JSON
+                    Log.Information("Joke JSON Object Detected!");
+                    Log.Information("Deserializing Joke JSON response.");
                     var joke = JsonSerializer.Deserialize<Joke>(content);
                     if (joke != null)
                     {
-                        // Update Joke Text
-                        jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
-
                         // Log Joke JSON Details
-                        Log.Information("Joke Error: {error}", joke.Error);
-                        Log.Information("Joke Category: {category}", joke.Category);
-                        Log.Information("Joke Type: {type}", joke.Type);
-                        Log.Information("Joke Setup: {setup}", joke.Setup);
-                        Log.Information("Joke Delivery: {delivery}", joke.Delivery);
-                        Log.Information("Joke Flags: {flags}", joke.Flags);
-                        Log.Information("Joke Id: {id}", joke.Id);
-                        Log.Information("Joke Safe: {safe}", joke.Safe);
-                        Log.Information("Joke Type: {type}", joke.Type);
-                        Log.Information("Joke Lang: {lang}", joke.Lang);
+                        joke.LogJokeDetails();
+
+                        // Update Joke Text
+                        Log.Information("Updating Joke Text.");
+                        jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
                     }
                     else
                     {
@@ -148,18 +142,19 @@
     {
         try
         {
-            Log.Information("BuildRequestUrl()...");
+            Log.Information("Building API Request URL...");
             var selectedFlagsList = selectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
-            Log.Information("Selected Flags from the UI: {selectedFlags}", string.Join(", ", selectedFlagsList));
 
             if (selectedFlagsList.Count > 0)
             {
+                Log.Information("Flags selected from the UI: {selectedFlags}", string.Join(", ", selectedFlagsList));
                 Log.Information("Adding BlacklistFLags to Url");
-                return $"{BaseRequestUrl}?blacklistFlags={string.Join(",", selectedFlagsList)}";
+                var blackListUrl = $"?blacklistFlags={string.Join(",", selectedFlagsList)}";
+                return $"{BaseRequestUrl}{blackListUrl}";
             }
             else
             {
-                Log.Information("No BlacklistFlags selected.");
+                Log.Information("No BlacklistFlags selected. Using base request Url.");
                 return BaseRequestUrl;
             }
         }
@@ -198,6 +193,20 @@
 
         [JsonPropertyName("lang")]
         public string? Lang { get; set; }
+
+        public void LogJokeDetails()
+        {
+            Log.Information("Joke Error: {error}", Error);
+            Log.Information("Joke Category: {category}", Category);
+            Log.Information("Joke Type: {type}", Type);
+            Log.Information("Joke Setup: {setup}", Setup);
+            Log.Information("Joke Delivery: {delivery}", Delivery);
+            Log.Information("Joke Flags: {flags}", Flags);
+            Log.Information("Joke Id: {id}", Id);
+            Log.Information("Joke Safe: {safe}", Safe);
+            Log.Information("Joke Type: {type}", Type);
+            Log.Information("Joke Lang: {lang}", Lang);
+        }
     }
 
     public class Flags
@@ -248,5 +257,16 @@
 
         [JsonPropertyName("timeStamp")]
         public long TimeStamp { get; set; }
+
+        public void LogJokeApiErrorDetails()
+        {
+            Log.Information("Error Error: {error}", Error);
+            Log.Information("Error InternalError: {internalError}", InternalError);
+            Log.Information("Error Code: {code}", Code);
+            Log.Information("Error Message: {message}", Message);
+            Log.Information("Error CausedBy: {causedBy}", string.Join(", ", CausedBy!));
+            Log.Information("Error AdditionalInfo: {additionalInfo}", AdditionalInfo);
+            Log.Information("Error TimeStamp: {timeStamp}", TimeStamp);
+        }
     }
 }

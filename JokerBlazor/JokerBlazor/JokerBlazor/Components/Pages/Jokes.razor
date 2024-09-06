@@ -13,15 +13,15 @@
     <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
         <MudText Typo="Typo.body1">Select Flags to Blacklist</MudText>
         <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-            @foreach (var flag in blacklistFlags)
+            @foreach (var flag in BlacklistFlags)
             {
-                <MudCheckBox T="bool" Label="@flag" @bind-value="@selectedFlags[flag]" />
+                <MudCheckBox T="bool" Label="@flag" @bind-value="@SelectedFlags[flag]" />
             }
         </div>
         <div style="display: flex; flex-direction: row; align-items: center;">
             <MudText Typo="Typo.body1">API Url: </MudText>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <MudText Variant="Variant.Filled" Color="Color.Primary">@displayUrl</MudText>
+            <MudText Variant="Variant.Filled" Color="Color.Primary">@_displayUrl</MudText>
         </div>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
             Generate New Joke
@@ -30,7 +30,7 @@
     <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
         <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            @if (isLoading)
+            @if (_isLoading)
             {
                 <div class="loading-indicator">
                     Loading...
@@ -41,232 +41,4 @@
     </MudPaper>
 </MudContainer>
 
-@code {
-    private bool isLoading;
-    private string BaseRequestUrl = "https://sv443.net/jokeapi/v2/joke/Any";
-    private string displayUrl = string.Empty;
 
-    private string? jokeText;
-
-    private string[] blacklistFlags = { "nsfw", "religious", "political", "racist", "sexist", "explicit" };
-    private Dictionary<string, bool> selectedFlags = new Dictionary<string, bool>();
-
-    protected override void OnInitialized()
-    {
-        foreach (var flag in blacklistFlags)
-        {
-            selectedFlags[flag] = false;
-        }
-
-        displayUrl = BaseRequestUrl;
-    }
-
-    private async Task GetJoke()
-    {
-        isLoading = true;
-        Log.Information("Requesting new Joke.");
-
-        try
-        {
-            string requestUrl = BuildRequestUrl();
-            Log.Information("RequestUrl: {requestUrl}", requestUrl);
-
-            Log.Information("Updating DisplayUrl.");
-            displayUrl = requestUrl;
-            using HttpClient client = new HttpClient();
-            using HttpResponseMessage response = await client.GetAsync(requestUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                Log.Information("API Response: \r\n{content}", content);
-                Log.Information("Parsing JSON Document.");
-                var jsonDocument = JsonDocument.Parse(content);
-                var rootElement = jsonDocument.RootElement;
-
-                // Check Error Property for which JSON Object the Response is.
-                if (rootElement.TryGetProperty("error", out JsonElement errorElement) && errorElement.GetBoolean())
-                {
-                    // JokeApiError JSON
-                    Log.Warning("JokeApiError JSON Object Detected!");
-                    Log.Information("Deserializing JokeApiError JSON response.");
-                    var error = JsonSerializer.Deserialize<JokeApiError>(content);
-                    if (error != null)
-                    {
-                        // Log Error JSON Details
-                        error.LogJokeApiErrorDetails();
-
-                        // Update Joke Text
-                        Log.Information("Updating Joke Text with Error Message.");
-                        jokeText = $"Error: {error.Message}";
-                    }
-                    else
-                    {
-                        Log.Error("Failed to deserialize JokeApiError JSON.\r\ncontent.ToString() {content}", content.ToString());
-                    }
-                }
-                else
-                {
-                    // Joke JSON
-                    Log.Information("Joke JSON Object Detected!");
-                    Log.Information("Deserializing Joke JSON response.");
-                    var joke = JsonSerializer.Deserialize<Joke>(content);
-                    if (joke != null)
-                    {
-                        // Log Joke JSON Details
-                        joke.LogJokeDetails();
-
-                        // Update Joke Text
-                        Log.Information("Updating Joke Text.");
-                        jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
-                    }
-                    else
-                    {
-                        Log.Error("Failed to deserialize Joke JSON.\r\ncontent.ToString() {content}", content.ToString());
-                    }
-                }
-            }
-            else
-            {
-                jokeText = $"Unsuccessful StatusCode.\r\nStatusCode: {response.StatusCode}";
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error getting Joke.");
-        }
-
-        isLoading = false;
-    }
-
-    private string BuildRequestUrl()
-    {
-        try
-        {
-            Log.Information("Building API Request URL...");
-            var selectedFlagsList = selectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
-
-            if (selectedFlagsList.Count > 0)
-            {
-                Log.Information("Flags selected from the UI: {selectedFlags}", string.Join(", ", selectedFlagsList));
-                Log.Information("Adding BlacklistFLags to Url");
-                var blackListUrl = $"?blacklistFlags={string.Join(",", selectedFlagsList)}";
-                return $"{BaseRequestUrl}{blackListUrl}";
-            }
-            else
-            {
-                Log.Information("No BlacklistFlags selected. Using base request Url.");
-                return BaseRequestUrl;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "An error occurred in BuildRequestUri");
-            return string.Empty;
-        }
-    }
-
-    public class Joke
-    {
-        [JsonPropertyName("error")]
-        public bool Error { get; set; }
-
-        [JsonPropertyName("category")]
-        public string? Category { get; set; }
-
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("setup")]
-        public string? Setup { get; set; }
-
-        [JsonPropertyName("delivery")]
-        public string? Delivery { get; set; }
-
-        [JsonPropertyName("flags")]
-        public Flags? Flags { get; set; }
-
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("safe")]
-        public bool Safe { get; set; }
-
-        [JsonPropertyName("lang")]
-        public string? Lang { get; set; }
-
-        public void LogJokeDetails()
-        {
-            Log.Information("Joke Error: {error}", Error);
-            Log.Information("Joke Category: {category}", Category);
-            Log.Information("Joke Type: {type}", Type);
-            Log.Information("Joke Setup: {setup}", Setup);
-            Log.Information("Joke Delivery: {delivery}", Delivery);
-            Log.Information("Joke Flags: {flags}", Flags);
-            Log.Information("Joke Id: {id}", Id);
-            Log.Information("Joke Safe: {safe}", Safe);
-            Log.Information("Joke Type: {type}", Type);
-            Log.Information("Joke Lang: {lang}", Lang);
-        }
-    }
-
-    public class Flags
-    {
-        [JsonPropertyName("nsfw")]
-        public bool Nsfw { get; set; }
-
-        [JsonPropertyName("religious")]
-        public bool Religious { get; set; }
-
-        [JsonPropertyName("political")]
-        public bool Political { get; set; }
-
-        [JsonPropertyName("racist")]
-        public bool Racist { get; set; }
-
-        [JsonPropertyName("sexist")]
-        public bool Sexist { get; set; }
-
-        [JsonPropertyName("explicit")]
-        public bool Explicit { get; set; }
-
-        public override string ToString()
-        {
-            return $"Nsfw: {Nsfw}, Religious: {Religious}, Political: {Political}, Racist: {Racist}, Sexist: {Sexist}, Explicit: {Explicit}";
-        }
-    }
-
-    public class JokeApiError
-    {
-        [JsonPropertyName("error")]
-        [Required] public bool Error { get; set; }
-
-        [JsonPropertyName("internalError")]
-        public bool InternalError { get; set; }
-
-        [JsonPropertyName("code")]
-        public int Code { get; set; }
-
-        [JsonPropertyName("message")]
-        public string? Message { get; set; }
-
-        [JsonPropertyName("causedBy")]
-        public string[]? CausedBy { get; set; }
-
-        [JsonPropertyName("additionalInfo")]
-        public string? AdditionalInfo { get; set; }
-
-        [JsonPropertyName("timeStamp")]
-        public long TimeStamp { get; set; }
-
-        public void LogJokeApiErrorDetails()
-        {
-            Log.Information("Error Error: {error}", Error);
-            Log.Information("Error InternalError: {internalError}", InternalError);
-            Log.Information("Error Code: {code}", Code);
-            Log.Information("Error Message: {message}", Message);
-            Log.Information("Error CausedBy: {causedBy}", string.Join(", ", CausedBy!));
-            Log.Information("Error AdditionalInfo: {additionalInfo}", AdditionalInfo);
-            Log.Information("Error TimeStamp: {timeStamp}", TimeStamp);
-        }
-    }
-}

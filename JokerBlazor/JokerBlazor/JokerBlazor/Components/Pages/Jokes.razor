@@ -1,16 +1,16 @@
 ﻿@page "/jokes"
 
-<MudContainer>
+<MudContainer style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 10px; text-align: center;">
     <MudText Typo="Typo.h4" Align="Align.Center">Jokes</MudText>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div style="display: flex; flex-direction: row; align-items: center;">
-            <MudText Typo="Typo.body1">API Url: </MudText>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <MudText Variant="Variant.Filled" Color="Color.Primary">@displayUrl</MudText>
-        </div>
-        
-        <br />
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
+        <MudText Typo="Typo.h6">Dave's side note:</MudText>
+        <MudText Typo="Typo.body1">
+            Sometimes a joke is generated with a **Null** value for the Setup and Delivery of the Joke. If that happens click to generate a new joke until you see a new one appear. 
+            <br/> 
+            The request and response are still valid and can be seen within the Logs.
+        </MudText>
+    </MudPaper>
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
         <MudText Typo="Typo.body1">Select Flags to Blacklist</MudText>
         <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
             @foreach (var flag in blacklistFlags)
@@ -18,13 +18,16 @@
                 <MudCheckBox T="bool" Label="@flag" @bind-value="@selectedFlags[flag]" />
             }
         </div>
-
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <MudText Typo="Typo.body1">API Url: </MudText>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <MudText Variant="Variant.Filled" Color="Color.Primary">@displayUrl</MudText>
+        </div>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
             Generate New Joke
         </MudButton>
     </MudPaper>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
         <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
             @if (isLoading)
@@ -36,13 +39,7 @@
             @jokeText
         </MudText>
     </MudPaper>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <MudText Typo="Typo.h6">Dave's side note:</MudText>
-        <MudText Typo="Typo.body1">Sometimes no joke is generated. If that happens click to generate a new joke until you see a new one appear.</MudText>
-    </MudPaper>
 </MudContainer>
-
 
 @code {
     private bool isLoading;
@@ -67,28 +64,83 @@
     private async Task GetJoke()
     {
         isLoading = true;
+
         string requestUrl = BuildRequestUrl();
         displayUrl = requestUrl;
-        Log.Information("BuildRequestUrl() {requestUrl}", requestUrl);
+        Log.Information("DisplayUrl: {requestUrl}", requestUrl);
 
-        using HttpClient client = new HttpClient();
-        using HttpResponseMessage response = await client.GetAsync(requestUrl);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            Joke? joke = await response.Content.ReadFromJsonAsync<Joke>();
-            if (joke != null)
+            using HttpClient client = new HttpClient();
+            using HttpResponseMessage response = await client.GetAsync(requestUrl);
+            if (response.IsSuccessStatusCode)
             {
-                jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
+                var content = await response.Content.ReadAsStringAsync();
+                Log.Information("API Response: \r\n{content}", content);
+                var jsonDocument = JsonDocument.Parse(content);
+                var rootElement = jsonDocument.RootElement;
+
+                // Check Error Property for which JSON Object the Response is.
+                if (rootElement.TryGetProperty("error", out JsonElement errorElement) && errorElement.GetBoolean())
+                {
+                    // JokeApiError JSON
+                    var error = JsonSerializer.Deserialize<JokeApiError>(content);
+                    if (error != null)
+                    {
+                        // Update Joke Text
+                        jokeText = $"Error: {error.Message}";
+
+                        // Log Error JSON Details
+                        Log.Information("Error Error: {error}", error.Error);
+                        Log.Information("Error InternalError: {internalError}", error.InternalError);
+                        Log.Information("Error Code: {code}", error.Code);
+                        Log.Information("Error Message: {message}", error.Message);
+                        Log.Information("Error CausedBy: {causedBy}", string.Join(", ", error.CausedBy!));
+                        Log.Information("Error AdditionalInfo: {additionalInfo}", error.AdditionalInfo);
+                        Log.Information("Error TimeStamp: {timeStamp}", error.TimeStamp);
+                    }
+                    else
+                    {
+                        Log.Error("Failed to deserialize JokeApiError JSON.\r\ncontent.ToString() {content}", content.ToString());
+                    }
+                }
+                else
+                {
+                    // Joke JSON
+                    var joke = JsonSerializer.Deserialize<Joke>(content);
+                    if (joke != null)
+                    {
+                        // Update Joke Text
+                        jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
+
+                        // Log Joke JSON Details
+                        Log.Information("Joke Error: {error}", joke.Error);
+                        Log.Information("Joke Category: {category}", joke.Category);
+                        Log.Information("Joke Type: {type}", joke.Type);
+                        Log.Information("Joke Setup: {setup}", joke.Setup);
+                        Log.Information("Joke Delivery: {delivery}", joke.Delivery);
+                        Log.Information("Joke Flags: {flags}", joke.Flags);
+                        Log.Information("Joke Id: {id}", joke.Id);
+                        Log.Information("Joke Safe: {safe}", joke.Safe);
+                        Log.Information("Joke Type: {type}", joke.Type);
+                        Log.Information("Joke Lang: {lang}", joke.Lang);
+                    }
+                    else
+                    {
+                        Log.Error("Failed to deserialize Joke JSON.\r\ncontent.ToString() {content}", content.ToString());
+                    }
+                }
             }
             else
             {
-                jokeText = "Failed to retrieve joke";
+                jokeText = $"Unsuccessful StatusCode.\r\nStatusCode: {response.StatusCode}";
             }
         }
-        else
+        catch (Exception ex)
         {
-            jokeText = "Failed to retrieve joke";
+            Log.Error(ex, "Error getting Joke.");
         }
+
         isLoading = false;
     }
 
@@ -96,15 +148,20 @@
     {
         try
         {
+            Log.Information("BuildRequestUrl()...");
             var selectedFlagsList = selectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
-            Log.Information("Selected Flags: {selectedFlags}", string.Join(", ", selectedFlagsList));
+            Log.Information("Selected Flags from the UI: {selectedFlags}", string.Join(", ", selectedFlagsList));
 
             if (selectedFlagsList.Count > 0)
             {
+                Log.Information("Adding BlacklistFLags to Url");
                 return $"{BaseRequestUrl}?blacklistFlags={string.Join(",", selectedFlagsList)}";
             }
-
-            return BaseRequestUrl;
+            else
+            {
+                Log.Information("No BlacklistFlags selected.");
+                return BaseRequestUrl;
+            }
         }
         catch (Exception ex)
         {
@@ -115,7 +172,81 @@
 
     public class Joke
     {
+        [JsonPropertyName("error")]
+        public bool Error { get; set; }
+
+        [JsonPropertyName("category")]
+        public string? Category { get; set; }
+
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("setup")]
         public string? Setup { get; set; }
+
+        [JsonPropertyName("delivery")]
         public string? Delivery { get; set; }
+
+        [JsonPropertyName("flags")]
+        public Flags? Flags { get; set; }
+
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("safe")]
+        public bool Safe { get; set; }
+
+        [JsonPropertyName("lang")]
+        public string? Lang { get; set; }
+    }
+
+    public class Flags
+    {
+        [JsonPropertyName("nsfw")]
+        public bool Nsfw { get; set; }
+
+        [JsonPropertyName("religious")]
+        public bool Religious { get; set; }
+
+        [JsonPropertyName("political")]
+        public bool Political { get; set; }
+
+        [JsonPropertyName("racist")]
+        public bool Racist { get; set; }
+
+        [JsonPropertyName("sexist")]
+        public bool Sexist { get; set; }
+
+        [JsonPropertyName("explicit")]
+        public bool Explicit { get; set; }
+
+        public override string ToString()
+        {
+            return $"Nsfw: {Nsfw}, Religious: {Religious}, Political: {Political}, Racist: {Racist}, Sexist: {Sexist}, Explicit: {Explicit}";
+        }
+    }
+
+    public class JokeApiError
+    {
+        [JsonPropertyName("error")]
+        [Required] public bool Error { get; set; }
+
+        [JsonPropertyName("internalError")]
+        public bool InternalError { get; set; }
+
+        [JsonPropertyName("code")]
+        public int Code { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
+
+        [JsonPropertyName("causedBy")]
+        public string[]? CausedBy { get; set; }
+
+        [JsonPropertyName("additionalInfo")]
+        public string? AdditionalInfo { get; set; }
+
+        [JsonPropertyName("timeStamp")]
+        public long TimeStamp { get; set; }
     }
 }

@@ -21,7 +21,7 @@
         <div Class="jokes-api-url">
             <MudText Typo="Typo.body1">API Url: </MudText>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <MudText Variant="Variant.Filled" Color="Color.Primary">@_displayUrl</MudText>
+            <MudText Variant="Variant.Filled" Color="Color.Primary">@DisplayUrl</MudText>
         </div>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
             Generate New Joke
@@ -30,13 +30,13 @@
     <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
         <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            @if (_isLoading)
+            @if (IsLoading)
             {
                 <div class="loading-indicator">
                     Loading...
                 </div>
             }
-            @jokeText
+            @JokeText
         </MudText>
     </MudPaper>
 </MudContainer>

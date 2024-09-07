@@ -1,33 +1,36 @@
 ﻿@page "/jokes"
 
-<MudContainer>
+<MudContainer Class="jokes-container">
     <MudText Typo="Typo.h4" Align="Align.Center">Jokes</MudText>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div style="display: flex; flex-direction: row; align-items: center;">
-            <MudText Typo="Typo.body1">API Url: </MudText>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <MudText Variant="Variant.Filled" Color="Color.Primary">@displayUrl</MudText>
-        </div>
-        
-        <br />
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
+        <MudText Typo="Typo.h6">Dave's side note:</MudText>
+        <MudText Typo="Typo.body1">
+            Sometimes a joke is generated with a **Null** value for the Setup and Delivery of the Joke. If that happens click to generate a new joke until you see a new one appear. 
+            <br/> 
+            The request and response are still valid and can be seen within the Logs.
+        </MudText>
+    </MudPaper>
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1">Select Flags to Blacklist</MudText>
-        <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-            @foreach (var flag in blacklistFlags)
+        <div Class="jokes-flags">
+            @foreach (var flag in BlacklistFlags)
             {
-                <MudCheckBox T="bool" Label="@flag" @bind-value="@selectedFlags[flag]" />
+                <MudCheckBox T="bool" Label="@flag" @bind-value="@SelectedFlags[flag]" />
             }
         </div>
-
+        <div Class="jokes-api-url">
+            <MudText Typo="Typo.body1">API Url: </MudText>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <MudText Variant="Variant.Filled" Color="Color.Primary">@_displayUrl</MudText>
+        </div>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
             Generate New Joke
         </MudButton>
     </MudPaper>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
         <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            @if (isLoading)
+            @if (_isLoading)
             {
                 <div class="loading-indicator">
                     Loading...
@@ -36,86 +39,4 @@
             @jokeText
         </MudText>
     </MudPaper>
-
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <MudText Typo="Typo.h6">Dave's side note:</MudText>
-        <MudText Typo="Typo.body1">Sometimes no joke is generated. If that happens click to generate a new joke until you see a new one appear.</MudText>
-    </MudPaper>
 </MudContainer>
-
-
-@code {
-    private bool isLoading;
-    private string BaseRequestUrl = "https://sv443.net/jokeapi/v2/joke/Any";
-    private string displayUrl = string.Empty;
-
-    private string? jokeText;
-
-    private string[] blacklistFlags = { "nsfw", "religious", "political", "racist", "sexist", "explicit" };
-    private Dictionary<string, bool> selectedFlags = new Dictionary<string, bool>();
-
-    protected override void OnInitialized()
-    {
-        foreach (var flag in blacklistFlags)
-        {
-            selectedFlags[flag] = false;
-        }
-
-        displayUrl = BaseRequestUrl;
-    }
-
-    private async Task GetJoke()
-    {
-        isLoading = true;
-        string requestUrl = BuildRequestUrl();
-        displayUrl = requestUrl;
-        Log.Information("BuildRequestUrl() {requestUrl}", requestUrl);
-
-        using HttpClient client = new HttpClient();
-        using HttpResponseMessage response = await client.GetAsync(requestUrl);
-        if (response.IsSuccessStatusCode)
-        {
-            Joke? joke = await response.Content.ReadFromJsonAsync<Joke>();
-            if (joke != null)
-            {
-                jokeText = $"{joke.Setup} \r\n {joke.Delivery}";
-            }
-            else
-            {
-                jokeText = "Failed to retrieve joke";
-            }
-        }
-        else
-        {
-            jokeText = "Failed to retrieve joke";
-        }
-        isLoading = false;
-    }
-
-    private string BuildRequestUrl()
-    {
-        try
-        {
-            var selectedFlagsList = selectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
-            Log.Information("Selected Flags: {selectedFlags}", string.Join(", ", selectedFlagsList));
-
-            if (selectedFlagsList.Count > 0)
-            {
-                return $"{BaseRequestUrl}?blacklistFlags={string.Join(",", selectedFlagsList)}";
-            }
-
-            return BaseRequestUrl;
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "An error occurred in BuildRequestUri");
-            return string.Empty;
-        }
-    }
-
-    public class Joke
-    {
-        public string? Setup { get; set; }
-        public string? Delivery { get; set; }
-    }
-}

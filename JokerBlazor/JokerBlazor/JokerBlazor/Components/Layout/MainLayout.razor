@@ -16,7 +16,7 @@
                 </MudChip>
             </ActivatorContent>
             <ChildContent>
-                <MudSwitch ValueChanged="OnThemeChanged" Color="Color.Primary" Class="ma-4" T="bool" Label="Theme" />
+                <MudSwitch @bind-Value="IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Theme" />
                 <MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit">About</MudNavLink>
             </ChildContent>
         </MudMenu>
@@ -40,15 +40,27 @@
     private void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
     // Light/Dark Mode Toggle
-    private bool _isDarkMode = false;
     private MudThemeProvider? _mudThemeProvider;
+    private bool _isDarkMode = false;
 
-    private void OnThemeChanged(bool _p_isDarkMode)
+    private bool IsDarkMode
+    {
+        get => _isDarkMode;
+        set
+        {
+            if (_isDarkMode != value)
+            {
+                _isDarkMode = value;
+                OnThemeChanged(_isDarkMode);
+            }
+        }
+    }
+
+    private void OnThemeChanged(bool isDarkMode)
     {
         try
         {
-            _isDarkMode = _p_isDarkMode;
-            Log.Information("OnThemeChanged: {label}", (_isDarkMode ? "Dark Mode" : "Light Mode"));
+            Log.Information("OnThemeChanged: {label}", (isDarkMode ? "Dark Mode" : "Light Mode"));
             StateHasChanged();
         }
         catch (Exception ex)

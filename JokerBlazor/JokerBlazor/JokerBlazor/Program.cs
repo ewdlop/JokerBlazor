@@ -1,4 +1,5 @@
 using JokerBlazor.Components;
+using JokerBlazor.Services;
 using JokerBlazor.Settings;
 using MudBlazor.Services;
 using Serilog;
@@ -19,6 +20,7 @@ builder.Services.AddRazorComponents()
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+builder.Services.AddScoped<DarkModeService>();
 
 var app = builder.Build();
 

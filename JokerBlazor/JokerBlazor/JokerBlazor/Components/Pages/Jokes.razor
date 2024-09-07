@@ -1,8 +1,8 @@
 ﻿@page "/jokes"
 
-<MudContainer style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 10px; text-align: center;">
+<MudContainer Class="jokes-container">
     <MudText Typo="Typo.h4" Align="Align.Center">Jokes</MudText>
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.h6">Dave's side note:</MudText>
         <MudText Typo="Typo.body1">
             Sometimes a joke is generated with a **Null** value for the Setup and Delivery of the Joke. If that happens click to generate a new joke until you see a new one appear. 
@@ -10,15 +10,15 @@
             The request and response are still valid and can be seen within the Logs.
         </MudText>
     </MudPaper>
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1">Select Flags to Blacklist</MudText>
-        <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+        <div Class="jokes-flags">
             @foreach (var flag in BlacklistFlags)
             {
                 <MudCheckBox T="bool" Label="@flag" @bind-value="@SelectedFlags[flag]" />
             }
         </div>
-        <div style="display: flex; flex-direction: row; align-items: center;">
+        <div Class="jokes-api-url">
             <MudText Typo="Typo.body1">API Url: </MudText>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <MudText Variant="Variant.Filled" Color="Color.Primary">@_displayUrl</MudText>
@@ -27,7 +27,7 @@
             Generate New Joke
         </MudButton>
     </MudPaper>
-    <MudPaper Class="pa-4 mt-4" style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 850px;">
+    <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
         <MudText Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
             @if (_isLoading)
@@ -40,5 +40,3 @@
         </MudText>
     </MudPaper>
 </MudContainer>
-
-

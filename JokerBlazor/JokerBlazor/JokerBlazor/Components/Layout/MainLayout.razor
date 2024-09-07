@@ -1,6 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using JokerBlazor.Services
+@inherits LayoutComponentBase
+@inject DarkModeService DarkModeService
+@inject ILogger<MainLayout> Logger
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudThemeProvider @ref="@_mudThemeProvider" IsDarkMode="@DarkModeService.IsDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -16,7 +19,7 @@
                 </MudChip>
             </ActivatorContent>
             <ChildContent>
-                <MudSwitch @bind-Value="IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Theme" />
+                <MudSwitch @bind-Value="DarkModeService.IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="@_label" />
                 <MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit">About</MudNavLink>
             </ChildContent>
         </MudMenu>
@@ -40,32 +43,31 @@
     private void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
     // Light/Dark Mode Toggle
-    private MudThemeProvider? _mudThemeProvider;
-    private bool _isDarkMode = false;
+    private MudThemeProvider _mudThemeProvider = new MudThemeProvider();
+    private string _label = string.Empty;
 
-    private bool IsDarkMode
+    protected override void OnInitialized()
     {
-        get => _isDarkMode;
-        set
-        {
-            if (_isDarkMode != value)
-            {
-                _isDarkMode = value;
-                OnThemeChanged(_isDarkMode);
-            }
-        }
+        _label = DarkModeService.IsDarkMode ? "Dark Mode" : "Light Mode";
+        DarkModeService.OnChange += OnThemeChanged;
     }
 
-    private void OnThemeChanged(bool isDarkMode)
+    public void Dispose()
+    {
+        DarkModeService.OnChange -= OnThemeChanged;
+    }
+
+    private void OnThemeChanged()
     {
         try
         {
-            Log.Information("OnThemeChanged: {label}", (isDarkMode ? "Dark Mode" : "Light Mode"));
+            _label = DarkModeService.IsDarkMode ? "Dark Mode" : "Light Mode";
+            Logger.LogInformation("OnThemeChanged: {label}", _label);
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred in OnThemeChanged");
+            Logger.LogError(ex, "An error occurred in OnThemeChanged");
         }
     }
 }

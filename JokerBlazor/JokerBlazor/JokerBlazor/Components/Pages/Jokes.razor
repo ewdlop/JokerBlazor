@@ -5,8 +5,8 @@
     <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.h6">Dave's side note:</MudText>
         <MudText Typo="Typo.body1">
-            Sometimes a joke is generated with a **Null** value for the Setup and Delivery of the Joke. If that happens click to generate a new joke until you see a new one appear. 
-            <br/> 
+            Sometimes a joke is generated with a **Null** value for the Setup and Delivery of the Joke. If that happens click to generate a new joke until you see a new one appear.
+            <br />
             The request and response are still valid and can be seen within the Logs.
         </MudText>
     </MudPaper>
@@ -23,9 +23,6 @@
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <MudText Variant="Variant.Filled" Color="Color.Primary">@DisplayUrl</MudText>
         </div>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
-            Generate New Joke
-        </MudButton>
     </MudPaper>
     <MudPaper Class="pa-4 mt-4 jokes-paper">
         <MudText Typo="Typo.body1" Align="Align.Center">Joke Text</MudText>
@@ -38,5 +35,14 @@
             }
             @JokeText
         </MudText>
+        <div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetPreviousJoke" Class="mt-4">
+                Previous
+            </MudButton>
+            <span class="button-space"></span>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GetJoke" Class="mt-4">
+                New Joke
+            </MudButton>
+        </div>
     </MudPaper>
 </MudContainer>

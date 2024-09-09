@@ -8,7 +8,9 @@ namespace JokerBlazor.Components.Pages
         private bool IsLoading;
         private string DisplayUrl = string.Empty;
         private string? JokeText;
+        private int currentJokeIndex = -1;
 
+        private readonly List<string> jokesList = [];
         private readonly string BaseRequestUrl = "https://sv443.net/jokeapi/v2/joke/Any";
         private readonly string[] BlacklistFlags = ["nsfw", "religious", "political", "racist", "sexist", "explicit"];
         private readonly Dictionary<string, bool> SelectedFlags = [];
@@ -80,7 +82,19 @@ namespace JokerBlazor.Components.Pages
 
                             // Update Joke Text
                             Log.Information("Updating Joke Text.");
-                            JokeText = $"{_joke.Setup} \r\n {_joke.Delivery}";
+                            if (_joke.Setup != null || _joke.Delivery != null)
+                            {
+                                JokeText = $"{_joke.Setup} \r\n {_joke.Delivery}";
+
+                                // Store the joke in the list and update the current index
+                                jokesList.Add(JokeText);
+                                currentJokeIndex = jokesList.Count - 1;
+                            }
+                            else
+                            {
+                                Log.Warning("Value for Joke.Setup {setup} \tValue for Joke.Delivery {delivery}", _joke.Setup, _joke.Delivery);
+                                JokeText = "Please Try Again.";
+                            }
                         }
                         else
                         {
@@ -99,6 +113,34 @@ namespace JokerBlazor.Components.Pages
             }
 
             IsLoading = false;
+        }
+
+        private void GetPreviousJoke()
+        {
+            try
+            {
+                if (currentJokeIndex > 0)
+                {
+                    currentJokeIndex--;
+                    JokeText = jokesList[currentJokeIndex];
+                    Log.Information("Previous Joke: {previousJoke}", JokeText);
+                    Log.Information("JokeList Index {value}", currentJokeIndex);
+                }
+                else if (currentJokeIndex == 0)
+                {
+                    JokeText = jokesList[currentJokeIndex];
+                    Log.Information("Last Previous from JokeList: {previousJoke}", JokeText);
+                    Log.Information("JokeList Index {value}", currentJokeIndex);
+                }
+                else
+                {
+                    Log.Information("No previous joke available.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error getting Previous Joke.");
+            }
         }
 
         private string BuildRequestUrl()

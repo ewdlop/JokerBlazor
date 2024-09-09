@@ -21,17 +21,19 @@ This is a Blazor Web Application project called JokerBlazor. It is built using t
 
 To get started with JokerBlazor, follow these steps:
 
-1. Install the .NET SDK: You will need to have the .NET SDK installed on your machine. You can download it from [here](https://dotnet.microsoft.com/en-us/download).
+1. Install the .NET SDK: You will need to have the .NET SDK installed on your machine. 
+	- You can download it from [here](https://dotnet.microsoft.com/en-us/download).
 2. Fork and Clone the repository: `git clone https://github.com/your-username/JokerBlazor.git`
-	1. Update this command with your GitHub username after forking the repository.
+	- Update this command with your GitHub username after forking the repository.
 3. Navigate to the project directory: `cd JokerBlazor`
 4. Open the project in Visual Studio: `explorer JokerBlazor.sln`
-	1. To open the project in Visual Studio from the Terminal
+	- To open the project in Visual Studio from the Terminal. 
+	- You can also open the project solution file directly from Visual Studio.
 5. Build the project: `clt + shift + 'b'`
-	1. Keyboard shortcut to build the project in Visual Studio
+	- Keyboard shortcut to build the project in Visual Studio
 6. Run the application: `Green play button in Visual Studio`
 7. Open your web browser and navigate to the corresponding `applicationUrl`
-	1. Within `JokerBlazor/Properties/launchSettings.json`, based on project startup launch profile, to see the application in action.
+	- Within `JokerBlazor/Properties/launchSettings.json`, based on project startup launch profile, to see the application in action.
 
 ## Features
 

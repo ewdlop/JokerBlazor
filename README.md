@@ -46,8 +46,8 @@ JokerBlazor has the following features:
 
 ## Pictures
 
-![Screenshot 1](./assets/jokes_darkmode.png){:height="100px" width="auto"}
-![Screenshot 2](./assets/jokes_lightmode.png){:height="100px" width="auto"}
+![Light Mode](./Assets/jokes_lightmode.png){:height="100px" width="auto"}
+![Dark Mode](./Assets/jokes_darkmode.png_){:height="100px" width="auto"}
 
 ## Technologies Used
 

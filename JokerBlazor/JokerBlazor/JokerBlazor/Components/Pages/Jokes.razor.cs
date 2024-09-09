@@ -148,8 +148,11 @@ namespace JokerBlazor.Components.Pages
             try
             {
                 Log.Information("Building API Request URL...");
+
+                // Generate the list of selected flags
                 var _selectedFlagsList = SelectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
 
+                // Log the selected flags & add them to the URL otherwise return the base URL
                 if (_selectedFlagsList.Count > 0)
                 {
                     Log.Information("Flags selected from the UI: {selectedFlags}", string.Join(", ", _selectedFlagsList));
@@ -167,6 +170,30 @@ namespace JokerBlazor.Components.Pages
             {
                 Log.Error(_ex, "An error occurred in BuildRequestUri");
                 return string.Empty;
+            }
+        }
+
+        private void OnFlagChanged(string flag, bool isChecked)
+        {
+            try
+            {
+                // Update the SelectedFlags dictionary
+                SelectedFlags[flag] = isChecked;
+
+                // Generate the list of selected flags
+                var _selectedFlagsList = SelectedFlags.Where(f => f.Value).Select(f => f.Key).ToList();
+
+                // Update the DisplayUrl
+                DisplayUrl = _selectedFlagsList.Count > 0
+                    ? $"{BaseRequestUrl}?blacklistFlags={string.Join(",", _selectedFlagsList)}"
+                    : BaseRequestUrl;
+
+                // Log the updated blacklist flags
+                Log.Information("Blacklist Flags Updated: {selectedFlags}", string.Join(", ", _selectedFlagsList));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "An error occurred in OnFlagChanged.");
             }
         }
     }

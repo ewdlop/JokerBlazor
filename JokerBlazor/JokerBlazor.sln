@@ -13,6 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{626F2867-84D4-4849-948D-F4D8E8B70125}"
+	ProjectSection(SolutionItems) = preProject
+		..\Assets\jokes_darkmode.png = ..\Assets\jokes_darkmode.png
+		..\Assets\jokes_lightmode.png = ..\Assets\jokes_lightmode.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +36,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{626F2867-84D4-4849-948D-F4D8E8B70125} = {3501E4EA-C655-4D4C-909A-4D82F72503FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B05F211B-FF19-4D5B-9F02-49CC7862E025}

@@ -101,6 +101,20 @@ namespace JokerBlazor.Components.Pages
             IsLoading = false;
         }
 
+        private void GetPreviousJoke()
+        {
+            try
+            {
+                Log.Information("Getting Previous Joke.");
+                string? previousJoke = JokeText;
+                Log.Information("Previous Joke: {previousJoke}", previousJoke);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error getting Previous Joke.");
+            }
+        }
+
         private string BuildRequestUrl()
         {
             try

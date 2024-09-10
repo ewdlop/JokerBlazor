@@ -26,7 +26,7 @@ namespace JokerBlazor.Settings
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while configuring Serilog in appSettings.json : {ex}");
+                Console.WriteLine($"An error occurred while configuring Serilog: {ex}");
                 throw;
             }
         }

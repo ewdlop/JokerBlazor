@@ -1,10 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JokerBlazor</title>
+    @* <base href="@(Configuration["BaseURL"] ?? "/")" /> *@
     <base href="/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />

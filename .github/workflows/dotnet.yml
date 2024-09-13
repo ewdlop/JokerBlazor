@@ -31,7 +31,7 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: ./JokerBlazor/JokerBlazor
+        working-directory: ./
 
       - name: Build
         run: dotnet build --no-restore
@@ -49,4 +49,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./JokerBlazor/JokerBlazor/bin/Release/net5.0/wwwroot
+          publish_dir: ./JokerBlazor/JokerBlazor/build/wwwroot

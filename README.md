@@ -8,13 +8,13 @@
 [![CSS](https://img.shields.io/badge/CSS-1572B6?logo=css3&logoColor=fff)](#)
 [![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?logo=html5&logoColor=white)](#)
 ![Blazor](https://img.shields.io/badge/Blazor-512BD4?style=flat&logo=blazor&logoColor=white)
-[![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=fff)](#)
+[![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?logo=webassembly&logoColor=fff)](#) <-
 ![MudBlazor](https://img.shields.io/badge/MudBlazor-7e6fff?style=flat&logo=blazor&logoColor=white)
 ![Serilog](https://img.shields.io/badge/Serilog-ff2518?style=flat&logo=serilog&logoColor=white)
 ![Newtonsoft.Json](https://img.shields.io/badge/Newtonsoft.Json-000?style=flat&logo=json&logoColor=white)
 [![Markdown](https://img.shields.io/badge/Markdown-%23000000.svg?logo=markdown&logoColor=white)](#)
 ![JokeAPI](https://img.shields.io/badge/JokeAPI-512BD4?style=flat&logo=api&logoColor=white)
-
+                           
 This is a Blazor Web Application project called JokerBlazor. It is built using the Blazor framework, which allows you to build interactive web applications using C# instead of JavaScript.
 
 ## Getting Started
